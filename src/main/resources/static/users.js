@@ -7,7 +7,7 @@
             $('#username').text(data.username);
 
             // Если roles - это массив объектов, возьмите нужное свойство
-            let roleNames = data.roles.map(role => role.name); // Преобразуем в массив строк
+            let roleNames = data.roles.map(role => role.name.substring(5)); // Преобразуем в массив строк
             $('#userRoles').text(roleNames.join(', '));  // Отображаем роли как строку
         });
 
@@ -19,7 +19,7 @@
             let tableBody = $('#userTableBody');
             users.forEach(user => {
                 // Если roles - это массив объектов, возьмите нужное свойство (например, user.roles[i].name)
-                let roles = user.roles.map(role => role.name); // Преобразуем каждый объект в строку
+                let roles = user.roles.map(role => role.name.substring(5)); // Преобразуем каждый объект в строку
                 tableBody.append(`
                     <tr>
                         <td>${user.id}</td>
