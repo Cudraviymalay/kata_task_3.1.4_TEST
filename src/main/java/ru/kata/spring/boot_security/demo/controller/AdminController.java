@@ -56,10 +56,4 @@ public class AdminController {
         userService.delete(id);
         return "redirect:/admin/";
     }
-
-    @GetMapping("/user")
-    public String user(Model model, Principal principal) {
-        model.addAttribute("user", userService.oneUser(principal));
-        return "userAdminInfo";
-    }
 }
