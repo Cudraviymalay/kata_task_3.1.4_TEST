@@ -1,12 +1,16 @@
-﻿
-$(document).ready(function() {
+﻿$(document).ready(function() {
     // Fetch user info
+// Fetch user info
     fetch('/api/user')
         .then(response => response.json())
         .then(data => {
             $('#username').text(data.username);
-            $('#userRoles').text(data.roles.join(', '));
+
+            // Если roles - это массив объектов, возьмите нужное свойство
+            let roleNames = data.roles.map(role => role.name); // Преобразуем в массив строк
+            $('#userRoles').text(roleNames.join(', '));  // Отображаем роли как строку
         });
+
 
     // Fetch all users
     fetch('/api/admin/users')
@@ -14,22 +18,24 @@ $(document).ready(function() {
         .then(users => {
             let tableBody = $('#userTableBody');
             users.forEach(user => {
+                // Если roles - это массив объектов, возьмите нужное свойство (например, user.roles[i].name)
+                let roles = user.roles.map(role => role.name); // Преобразуем каждый объект в строку
                 tableBody.append(`
-                        <tr>
-                            <td>${user.id}</td>
-                            <td>${user.username}</td>
-                            <td>${user.surname}</td>
-                            <td>${user.age}</td>
-                            <td>${user.email}</td>
-                            <td>${user.roles.join(', ')}</td>
-                            <td>
-                                <button class="btn btn-primary editUserBtn" data-id="${user.id}">Edit</button>
-                            </td>
-                            <td>
-                                <button class="btn btn-danger deleteUserBtn" data-id="${user.id}">Delete</button>
-                            </td>
-                        </tr>
-                    `);
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.username}</td>
+                        <td>${user.surname}</td>
+                        <td>${user.age}</td>
+                        <td>${user.email}</td>
+                        <td>${roles.join(', ')}</td>
+                        <td>
+                            <button class="btn btn-primary editUserBtn" data-id="${user.id}">Edit</button>
+                        </td>
+                        <td>
+                            <button class="btn btn-danger deleteUserBtn" data-id="${user.id}">Delete</button>
+                        </td>
+                    </tr>
+                `);
             });
 
             // Edit user button click
