@@ -65,54 +65,30 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return (User) ((Authentication) principal).getPrincipal();
     }
 
-    @Transactional
     @Override
-    public User createUser(User user, Set<Role> roles) {
+    @Transactional
+    public void createUser(User user) {
+        System.out.println(user.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<Role> setOfRoles = roles.stream()
-                .map(role -> {
-                    Role foundRole = roleService.findByName(role.getName());
-                    if (foundRole == null) {
-                        throw new EntityNotFoundException("Role " + role.getName() + " not found");
-                    }
-                    return foundRole;
-                })
-                .collect(Collectors.toSet());
-
-        user.setRoles(setOfRoles);
-        return user;
+        userDAO.save(user);
     }
 
-    @Transactional
     @Override
-    public void update(Long id, User user) {
-        User oldUser = userDAO.findById(id).get();
-        oldUser.setUsername(user.getUsername());
-        oldUser.setSurname(user.getSurname());
-        oldUser.setAge(user.getAge());
-        oldUser.setEmail(user.getEmail());
-        oldUser.setPassword(user.getPassword());
-        oldUser.setRoles(user.getRoles());
-        userDAO.save(oldUser);
-    }
-
     @Transactional
-    @Override
-    public User updateUser(Long id, User user, Set<Role> roles) {
-        User oldUser = getOne(id);
-
-        String newPassword = user.getPassword();
-        if (newPassword != null && !newPassword.isEmpty() && !passwordEncoder.matches(newPassword, oldUser.getPassword())) {
-            user.setPassword(passwordEncoder.encode(newPassword));
-        } else {
-            user.setPassword(oldUser.getPassword());
+    public void updateUser(User user) {
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User null");
         }
-        if (roles == null || roles.isEmpty()) {
-            user.setRoles(oldUser.getRoles());
-        } else {
-            user.setRoles(new HashSet<>(roles));
+        User existingUser = userDAO.findById(user.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Юзер не найдер"));
+        existingUser.setUsername(user.getUsername());
+        existingUser.setEmail(user.getEmail());
+        if (user.getPassword() != null && !user.getPassword().isEmpty() &&
+                !passwordEncoder.matches(user.getPassword(), existingUser.getPassword())) {
+            existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
         }
-        return user;
+        existingUser.setRoles(user.getRoles());
+        userDAO.save(existingUser);
     }
 
     @Transactional
