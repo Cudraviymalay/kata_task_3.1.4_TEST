@@ -27,7 +27,7 @@ public class AdminRestController {
     }
 
     // Получение всех пользователей
-    @GetMapping("/users")
+    @GetMapping("")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<List<User>> getAllUsers() {
         List<User> users = userService.getAllUsers();

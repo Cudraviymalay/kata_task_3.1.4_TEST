@@ -41,14 +41,16 @@ function getAllUsers() {
 
 // Отображение данных в таблице
 function loadTable(listAllUsers) {
-    let res = ''; // Переменная для хранения HTML таблицы
+    let res = ""; // Переменная для хранения HTML таблицы
     for (let user of listAllUsers) {
         res +=
             `<tr>
                 <td>${user.id}</td>
-                <td>${user.userName}</td>
+                <td>${user.username}</td>
+                <td>${user.surname}</td>
+                <td>${user.age}</td>
                 <td>${user.email}</td>
-                <td>${user.roles ? user.roles.map(role => " " + role.role.substring(5)) : ""}</td>
+                <td>${user.roles ? user.roles.map(role => role.name.substring(5)).join(', ') : 'No roles'}</td>
                 <td>
                     <button class="btn btn-info" type="button"
                     data-bs-toggle="modal" data-bs-target="#editModal"
@@ -104,7 +106,8 @@ function editModal(id) {
     }).then(res => {
         res.json().then(async u => {
             document.getElementById('editId').value = u.id;
-            document.getElementById('editNameU').value = u.userName;
+            document.getElementById('editNameU').value = u.username;
+            document.getElementById('editNameU').value = u.username;
             document.getElementById('editEmail').value = u.email;
             document.getElementById('editPassword').value = u.password; // Заполняем поля формы
             const allRoles = await getRoles(); // Получаем все роли
